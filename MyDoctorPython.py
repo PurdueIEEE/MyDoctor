@@ -68,8 +68,13 @@ def findSingleSymptom(intent, session):
     if 'location' in intent['slots']:
         location = intent['slots']['location']['value']
     card_title = "Finding health issue"
-    #TODO get health issue from database (IMO)
+    speech_output = symptom + " in " + location
 
+    #TODO get health issue from database (IMO)
+    should_end_session = True
+    return build_response({}, build_speechlet_response(
+        card_title, speech_output, None, should_end_session))
+   
 
 def findDualSymptom(intent, session):
     session_attributes = {}
@@ -84,8 +89,10 @@ def findDualSymptom(intent, session):
         symptom1 = intent['slots']['locationB']['value']
     card_title = "Finding health issue"
     #TODO get health issue from database (IMO)
-
-
+    speech_output = symptom1 + " in " + location1 + " and " + symptom2 + " in " + location2
+     should_end_session = True
+    return build_response({}, build_speechlet_response(
+        card_title, speech_output, None, should_end_session))
 '''def create_favorite_color_attributes(favorite_color):
     return {"favoriteColor": favorite_color}
 
