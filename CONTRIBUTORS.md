@@ -12,5 +12,4 @@ Justin Joco
 Kunal Sinha - Worked with Amazon Echo and Alexa platform
 
 #Thanks to:
-IMO
-Twilio
+IMO & Twilio
