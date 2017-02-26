@@ -16,27 +16,35 @@ ask = Ask(app, '/')
 logging.getLogger('flask_ask').setLevel(logging.DEBUG)
 
 # Authorization Codes:
-IMO_API_KEY = 'YXRpMjJ0MW8xd3AzOTQ=' #base64'ed
-APIAI_API_KEY = '7d673349e93f4d4f86fade84b59d7f80'
-TWILIO_SID = 'AC716ea80b58307e78b490a0f89db1b3e6'
-TWILIO_TOKEN = '52d2d91abb9ce80a38cb701fadf6d552'
-EMAIL_SERVER = 'smtp.gmail.com:587'
-EMAIL_USERNAME = 'embshackillinois@gmail.com'
-EMAIL_PASSWORD = 'embs2017'
+IMO_API_KEY = '' #base64'ed
+APIAI_API_KEY = ''
+TWILIO_SID = ''
+TWILIO_TOKEN = ''
+EMAIL_SERVER = ''
+EMAIL_USERNAME = ''
+EMAIL_PASSWORD = ''
 
 # We didn't feel the need to create a complex first-time setup and link it
 # to the Alexa User ID, so these variables are pre-set for now.
-USER_NAME = "Aditya Vaidyam"
-DOCTOR_NAME = "Doctor Doctor"
-DOCTOR_PHONE = "+14089058132"
-DOCTOR_EMAIL = "avaidyam@purdue.edu"
+USER_NAME = ""
+DOCTOR_NAME = ""
+DOCTOR_PHONE = ""
+DOCTOR_EMAIL = ""
 
 # Uses API.AI definitions as follows:
-#   1. I feel [@sys.any:symptom] in my [@sys.any:location].
-#   2. I have [@sys.any:symptom] in my [@sys.any:location].
-#   3. I feel [@sys.any:symptom].
-#   4. I have [@sys.any:symptom].
+#   I am [@sys.any:symptom].
+#   I am in [@sys.any:symptom].
+#   I feel [@sys.any:symptom].
+#   I have [@sys.any:symptom].
+#   I have a [@sys.any:symptom].
+#   I have [@sys.any:symptom] in my [@sys.any:location].
+#   I have a [@sys.any:symptom] on my [@sys.any:location].
+#   My [@sys.any:location] [@sys.any:symptom].
+#   My [@sys.any:location] is [@sys.any:symptom].
+#   My [@sys.any:location] are [@sys.any:symptom].
 #
+# Given a natural language query string, this will return a
+# set of tokens discovered (matching the above), if any exist.
 def query2symptoms(query):
     r = requests.get('https://api.api.ai/api/query', params = {
         'v': '20150910',
@@ -74,6 +82,9 @@ def symptoms2icd(query, results = 10):
         return []
     dat = js["SearchTermResponse"]["items"]
 
+    # The below keys are the only ones we want to return to the
+    # user/doctor/establishment. We also update the keys to be
+    # more context-appropriately named.
     valid_keys = ["title", "code", "ICD10CM_CODE", "LASTUPDATED", "SNOMED_DESCRIPTION"]
     icds = []
     for data in dat:
@@ -142,6 +153,49 @@ def respond_phone(token):
     resp.say(data)
     return str(resp)
 
+# In case the user opens or asks for help in the app.
+@ask.launch
+def voice_launch():
+    speech_text = 'I\'m Your Doctor. You can list your symptoms to me and say Done when you\'re finished. I\'ll make an appointment for you.'
+    return question(speech_text).reprompt(speech_text)
+@ask.intent('AMAZON.HelpIntent')
+def voice_help():
+    speech_text = 'You can list your symptoms to me and say Done when you\'re finished. I\'ll make an appointment for you.'
+    return question(speech_text).reprompt(speech_text)
+
+# In case the user wants to stop or cancel.
+@ask.intent('AMAZON.CancelIntent')
+def voice_cancel():
+    voice_stop()
+@ask.intent('AMAZON.StopIntent')
+def voice_stop():
+    return statement('Goodbye!')
+
+# This is the main driver function coming from Alexa.
+# The session attributes store transient symptoms while the user
+# continues interacting with us.
+#
+# The algorithm is as follows for handling user interaction:
+#   1. User input received from Alexa.
+#   2. User input was not "Done"?
+#       a. Process via API.AI NLP for keyword symtom/location combination.
+#       b. Was no "symptom" keyword matched?
+#           I. Reprompt user for another symptom.
+#       c. Else, combine ('location' + 'symptom') as the keyword.
+#       d. Lookup keyword in IMO's Portal API.
+#       e. Was no search response returned?
+#           I. Reprompt user for another symptom.
+#       f. Else, store symptom by keyword in the session attributes.
+#       g. Question user for another symptom.
+#   3. Use input was "Done"?
+#       a. Coalesce all descriptions into a formatted summary string.
+#       b. Were there no symptoms?
+#           I. Reprompt user for another symptom.
+#       c. Else, prepare voice, call, and email responses to be sent.
+#       d. Call via Twilio, Email via SMTP, and voice statement to the user.
+#   4. Return user output to Alexa.
+#
+# Note: there are no limitations on symptom length or kind present.
 @ask.intent('GetRawText', mapping={'raw': 'RawText'})
 def voice_input(raw):
     if 'done' not in raw.lower():
@@ -176,24 +230,6 @@ def voice_input(raw):
     call_phone(DOCTOR_PHONE, resdoc)
     send_email(DOCTOR_EMAIL, 'Patient Appointment', resdet)
     return statement(resusr).simple_card('Your Doctor', resusr)
-
-# In case the user opens or asks for help in the app.
-@ask.launch
-def voice_launch():
-    speech_text = 'I\'m Your Doctor. You can list your symptoms to me and say Done when you\'re finished. I\'ll make an appointment for you.'
-    return question(speech_text).reprompt(speech_text)
-@ask.intent('AMAZON.HelpIntent')
-def voice_help():
-    speech_text = 'You can list your symptoms to me and say Done when you\'re finished. I\'ll make an appointment for you.'
-    return question(speech_text).reprompt(speech_text)
-
-# In case the user wants to stop or cancel.
-@ask.intent('AMAZON.CancelIntent')
-def voice_cancel():
-    voice_stop()
-@ask.intent('AMAZON.StopIntent')
-def voice_stop():
-    return statement('Goodbye!')
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=True)
