@@ -10,6 +10,51 @@ from flask import request
 from flask_ask import Ask, request, session, question, statement
 import twilio.twiml
 
+# Alexa Intent Schema
+'''
+{
+    "intents": [
+        {
+            "intent": "GetRawText",
+            "slots": [
+                {
+                    "name": "RawText",
+                    "type": "AMAZON.LITERAL"
+                }
+            ]
+        }, 
+        {
+            "intent": "AMAZON.HelpIntent"
+        },
+        {
+            "intent": "AMAZON.StopIntent"
+        },
+        {
+            "intent": "AMAZON.CancelIntent"
+        }
+    ]
+}
+'''
+
+# Alexa Sample Utterances:
+'''
+GetRawText {I am not feeling well and am feeling pain in my shoulder| RawText}
+'''
+
+# API.AI "User Says" Contexts:
+'''
+I am [@sys.any:symptom].
+I am in [@sys.any:symptom].
+I feel [@sys.any:symptom].
+I have [@sys.any:symptom].
+I have a [@sys.any:symptom].
+I have [@sys.any:symptom] in my [@sys.any:location].
+I have a [@sys.any:symptom] on my [@sys.any:location].
+My [@sys.any:location] [@sys.any:symptom].
+My [@sys.any:location] is [@sys.any:symptom].
+My [@sys.any:location] are [@sys.any:symptom].
+'''
+
 # App Setup:
 app = Flask(__name__)
 ask = Ask(app, '/')
@@ -32,18 +77,7 @@ DOCTOR_NAME = ""
 DOCTOR_PHONE = ""
 DOCTOR_EMAIL = ""
 
-# Uses API.AI definitions as follows:
-#   I am [@sys.any:symptom].
-#   I am in [@sys.any:symptom].
-#   I feel [@sys.any:symptom].
-#   I have [@sys.any:symptom].
-#   I have a [@sys.any:symptom].
-#   I have [@sys.any:symptom] in my [@sys.any:location].
-#   I have a [@sys.any:symptom] on my [@sys.any:location].
-#   My [@sys.any:location] [@sys.any:symptom].
-#   My [@sys.any:location] is [@sys.any:symptom].
-#   My [@sys.any:location] are [@sys.any:symptom].
-#
+# Uses API.AI definitions provided above.
 # Given a natural language query string, this will return a
 # set of tokens discovered (matching the above), if any exist.
 def query2symptoms(query):
