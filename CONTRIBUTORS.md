@@ -16,6 +16,7 @@
 
 ###Justin Joco
 * IMO API bridging
+* Google Calendar API bridging ... almost ...
 
 ###Kunal Sinha
 * Amazon Echo/Alexa platform.
