@@ -1,0 +1,22 @@
+{
+    "intents": [
+        {
+            "intent": "GetRawText",
+            "slots": [
+                {
+                    "name": "RawText",
+                    "type": "AMAZON.LITERAL"
+                }
+            ]
+        }, 
+        {
+            "intent": "AMAZON.HelpIntent"
+        },
+        {
+            "intent": "AMAZON.StopIntent"
+        },
+        {
+            "intent": "AMAZON.CancelIntent"
+        }
+    ]
+}
