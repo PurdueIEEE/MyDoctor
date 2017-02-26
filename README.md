@@ -1,7 +1,7 @@
 # MyDoctor
+### Aditya Vaidyam, Apoorva Bhagwat, Hayley Chan, Justin Joco, Kunal Sinha, Celine Chang 
 
-A new Alexa skill that helps make the process of visiting the doctor easier made at HackIllinois 2017. You can tell MyDoctor your symptoms, and MyDoctor will send your symptoms to your doctor and create an appointment.
-  * [PROJECT FEATURES] 
+A new Alexa skill that helps make the process of visiting the doctor easier made at HackIllinois 2017. You can tell MyDoctor your symptoms, and MyDoctor will send your symptoms to your doctor using medical industry standard codes and create an appointment. You're welcome to add as many symptoms as you'd like, and we'll send your doctor what *we think* is the symptom you're describing as well as alternatives.
 
 ## USAGE
 Ex. 1)
@@ -19,17 +19,15 @@ Ex. 2)
   Alexa: ...Anything else?
   * Done
   
-   
-  
 ## BUILD/INSTALLATION INSTRUCTIONS
   * Amazon Echo
-    * [BUILD EXAMPLE]
-
-## [INTERFACES] _(if applicable)_ 
-
-## OTHER SOURCES OF DOCUMENTATION
+    * Configure using Alexa.md
 
 ## Contributor Guide
-[LINK TO CONTRIBUTING.md]
+[CONTRIBUTING.md](CONTRIBUTING.md)
+
+## Contributions
+[CONTRIBUTORS.md](CONTRIBUTORS.md)
 
 ## License 
+[LICENSE.md](LICENSE.md)
