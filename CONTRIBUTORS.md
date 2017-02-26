@@ -20,7 +20,9 @@
 
 ###Kunal Sinha
 * Amazon Echo/Alexa platform.
-* Azure... almost...
+* Looked into:
+  Azure
+  OpenMRS
 
 #Special Thanks:
 * IMO (Brian and "Qui-Gon Jinn")
