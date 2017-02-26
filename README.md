@@ -15,27 +15,18 @@ A new Alexa skill that helps make the process of visiting the doctor easier made
 1. ???
 1. Profit!
 
-## USAGE
+## INTERACTION SAMPLE
 Ex. 1)
-  * Hey Alexa, tell MyDoctor I have chest pain.<br>
-  Alexa: ...Anything else?
-  * I have a cold.<br>
-  Alexa: ...Anything else?
+  * Hey Alexa, talk to MyDoctor<br>
+  **Alexa:** I'm Your Doctor. You can list your symptoms to me and say Done when you're finished. I'll make an appointment for you.
+  * I have a `symptom`.<br>
+  **Alexa:** Your symptom was `symptom name`. Anything else?
+  * I have a `symptom`.<br>
+  **Alexa:** Your symptom was `symptom name`. Anything else?
   * Done
-
-
-Ex. 2)
-  * Hey Alexa, talk to MyDoctor.<br>
-  Alexa: ...
-  * I have chest pain<br>
-  Alexa: ...Anything else?
-  * I have a cold.<br>
-  Alexa: ...Anything else?
-  * Done
-  
-## BUILD/INSTALLATION INSTRUCTIONS
-  * Amazon Echo
-    * Configure using Alexa.md
+  **Alexa:** Your symptoms seem to be `symptom list`. I've made an appointment for `appointment time` with your doctor.
+  **Twilio:** Hello `doctor name`. Your patient `user name` has made an appointment for `appointment time` with the following symptoms: `symptom list`. Thank you.
+  **Email:** `{user spoken symptom => detailed possible IMO codes}`
 
 ## Contributor Guide
 [CONTRIBUTING.md](CONTRIBUTING.md)
