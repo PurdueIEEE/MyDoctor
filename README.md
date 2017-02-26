@@ -1,7 +1,11 @@
 # MyDoctor
 ### Aditya Vaidyam, Apoorva Bhagwat, Hayley Chan, Justin Joco, Kunal Sinha, Celine Chang 
 
+## INTRODUCTION
 A new Alexa skill that helps make the process of visiting the doctor easier made at HackIllinois 2017. You can tell MyDoctor your symptoms, and MyDoctor will send your symptoms to your doctor using medical industry standard codes and create an appointment. You're welcome to add as many symptoms as you'd like, and we'll send your doctor what *we think* is the symptom you're describing as well as alternatives.
+
+## MOTIVE 
+We discovered that most medical software happens to be designed for interaction between healthcare providers, but very few bridge the gap between patient and physician effectively by eliminating a pain point. We opted to build a tool with a dead simple interaction model -- which happens to be voice input. We didn't want to be armchair physicans and diagnose the user, using technology and abilities we didn't have -- that would not just be unhelpful, but likely dangerous. We instead figured that we needed to find a way to get the patient to the physician much faster. The answer was MyDoctor (or YourDoctor, depending on what you like). 
 
 ## INSTALLATION
 1. Obtain an email address, IMO API, Twilio API, and API.AI API keys. (Preface of [mydoctor.py](mydoctor.py)).
