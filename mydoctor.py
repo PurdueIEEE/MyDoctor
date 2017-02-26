@@ -1,7 +1,9 @@
+import os
 import logging
 import requests
 import json
 import uuid
+import smtplib
 from pprint import pprint
 from flask import Flask
 from flask import request
@@ -45,6 +47,16 @@ IMO_API_KEY = 'YXRpMjJ0MW8xd3AzOTQ=' #base64'ed
 APIAI_API_KEY = '7d673349e93f4d4f86fade84b59d7f80'
 TWILIO_SID = 'AC716ea80b58307e78b490a0f89db1b3e6'
 TWILIO_TOKEN = '52d2d91abb9ce80a38cb701fadf6d552'
+EMAIL_SERVER = 'smtp.gmail.com:587'
+EMAIL_USERNAME = 'embshackillinois@gmail.com'
+EMAIL_PASSWORD = 'embs2017'
+
+# We didn't feel the need to create a complex first-time setup and link it
+# to the Alexa User ID, so these variables are pre-set for now.
+USER_NAME = "Aditya Vaidyam"
+DOCTOR_NAME = "Doctor Doctor"
+DOCTOR_PHONE = "+14089058132"
+DOCTOR_EMAIL = "avaidyam@purdue.edu"
 
 # Uses API.AI definitions as follows:
 #   1. I feel [@sys.any:symptom] in my [@sys.any:location].
@@ -80,7 +92,14 @@ def symptoms2icd(query, results = 10):
     }, headers = {
         'Authorization': 'Basic ' + IMO_API_KEY
     })
-    dat = r.json()["SearchTermResponse"]["items"]
+
+    # Return empty array if we didn't get a good response.
+    js = r.json()
+    if 'SearchTermResponse' not in js:
+        return []
+    if 'items' not in js["SearchTermResponse"]:
+        return []
+    dat = js["SearchTermResponse"]["items"]
 
     valid_keys = ["title", "code", "ICD10CM_CODE", "LASTUPDATED", "SNOMED_DESCRIPTION"]
     icds = []
@@ -108,34 +127,47 @@ def symptomAPI():
     else:
         return json.dumps(icds)
 
+# Send an email to an address with a given message.
+def send_email(to, subject, msg):
+    toaddrs = 'embshackillinois@gmail.com'
+    msg = '''
+    From: MyDoctor <embshackillinois@gmail.com>
+    Subject: %s
+    %s
+    ''' % (subject, msg)
+
+    s = smtplib.SMTP(EMAIL_SERVER)
+    s.ehlo()
+    s.starttls()
+    s.login(EMAIL_USERNAME, EMAIL_PASSWORD)
+    s.sendmail(EMAIL_USERNAME, to, msg)
+    s.quit()
+
 # Enqueues a .call document with the phrase to be said and calls the number
 # given. The Twilio server will route to the respond_phone endpoint and say
 # phrase in a TwiML document returned to it.
 def call_phone(to_num, phrase):
     token = str(uuid.uuid4())
-    with open(token + '.call', 'w') as f:
+    with open('./' + token + '.call', 'w') as f:
         f.write(phrase)
-    with open(token + '.call', 'r') as f:
-        print(f.read())
 
     # Actually call the Twilio API here.
     r = requests.post('https://api.twilio.com/2010-04-01/Accounts/' + TWILIO_SID + '/Calls.json', data = {
         'From': '7652312067',
         'To': to_num,
+        'IfMachine': 'Continue',
         'Url': "https://avaidyam.pythonanywhere.com/twilio/" + token,
     }, auth = (TWILIO_SID, TWILIO_TOKEN))
 
 # Dequeues a .call document by the given token to return a phrase to say.
-@app.route('/twilio/<int:token>', methods=['GET', 'POST'])
+@app.route('/twilio/<token>', methods=['GET', 'POST'])
 def respond_phone(token):
     if token is None:
         return '', 500
 
     # Get the contents of the token's file.
-    token = uuid.UUID(token)
     with open(token + '.call', 'r') as f:
         data = f.read()
-    print(data)
     os.remove(token + '.call')
 
     # Return them as a Twilio response.
@@ -145,29 +177,56 @@ def respond_phone(token):
 
 @ask.intent('GetRawText', mapping={'raw': 'RawText'})
 def voice_input(raw):
-    symptoms = query2symptoms(raw)['symptom']
-    icds = symptoms2icd(symptoms)
-    res = 'Your symptom seems be ' + icds[0]['description'] + ". I'll let your doctor know. What else? "
-    call_phone('+14089058132', 'Hello Name Here. Your patient Name Here has made an appointment with the following symptoms: A, B, and C. Thank you.')
-    return statement(res).simple_card('Your Doctor', res)
+    if 'done' not in raw.lower():
+        symptoms = query2symptoms(raw)
+        if 'symptom' not in symptoms:
+            msg = 'You said ' + raw + ' but that didn\'t match symptoms.'
+            return question(msg).reprompt('I didn\'t catch that. ' + msg)
+        loc_mapped_sym = (symptoms['location'] + ' ' + symptoms['symptom']).strip()
+        icds = symptoms2icd(loc_mapped_sym)
+        if len(icds) == 0:
+            msg = 'You said ' + raw + ' but that didn\'t match symptoms.'
+            return question(msg).reprompt('I didn\'t catch that. ' + msg)
+        else:
+            session.attributes[loc_mapped_sym] = icds
+            msg = 'Your symptom was ' + icds[0]['description'] + '. Anything else?'
+            return question(msg).reprompt('I didn\'t catch that. ' + msg)
 
+    # If the user is done listing symptoms. Summarize all symptoms.
+    descs = []
+    for k, v in session.attributes.items():
+        descs.append(v[0]['description'].lower())
+    if len(descs) == 0:
+        msg = 'You didn\'t tell me any symptoms. Let\'s try that again.'
+        return question(msg).reprompt('I didn\'t catch that. Let\'s try that again')
+    summed = (', '.join(descs))
+
+    # Success: call, email, and return voice.
+    resusr = 'Your symptoms seem be ' + summed + ". I've made an appointment for tomorrow at 3pm with your doctor."
+    resdoc = 'Hello ' + DOCTOR_NAME + '. Your patient ' + USER_NAME + ' has made an appointment with the following symptoms: ' + summed + '. Thank you.'
+    resdet = '<pre>' + json.dumps(session.attributes, indent=4, separators=(',', ': ')) + '</pre>'
+
+    call_phone(DOCTOR_PHONE, resdoc)
+    send_email(DOCTOR_EMAIL, 'Patient Appointment', resdet)
+    return statement(resusr).simple_card('Your Doctor', resusr)
+
+# In case the user opens or asks for help in the app.
 @ask.launch
-def launch():
-    speech_text = 'Welcome to the Alexa Skills Kit, you can say hello'
-    return question(speech_text).reprompt(speech_text).simple_card('HelloWorld', speech_text)
-
+def voice_launch():
+    speech_text = 'I\'m Your Doctor. You can list your symptoms to me and say Done when you\'re finished. I\'ll make an appointment for you.'
+    return question(speech_text).reprompt(speech_text)
 @ask.intent('AMAZON.HelpIntent')
-def help():
-    speech_text = 'You can say hello to me!'
-    return question(speech_text).reprompt(speech_text).simple_card('HelloWorld', speech_text)
+def voice_help():
+    speech_text = 'You can list your symptoms to me and say Done when you\'re finished. I\'ll make an appointment for you.'
+    return question(speech_text).reprompt(speech_text)
 
-@ask.on_session_started
-def session_started():
-    print('new session started')
-
-@ask.session_ended
-def session_ended():
-    return "", 200
+# In case the user wants to stop or cancel.
+@ask.intent('AMAZON.CancelIntent')
+def voice_cancel():
+    voice_stop()
+@ask.intent('AMAZON.StopIntent')
+def voice_stop():
+    return statement('Goodbye!')
 
 if __name__ == "__main__":
     app.run(debug=True)
