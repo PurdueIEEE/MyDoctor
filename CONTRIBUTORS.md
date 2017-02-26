@@ -1,26 +1,26 @@
 #Contributors
-Aditya Vaidyam:
+###Aditya Vaidyam:
 * Python Flask Setup
 * Glue code & hosting
 
-Hayley Chan
+###Hayley Chan
 * API.AI NLP training
 * SMTP/Emailing
 
-Celine Chang
+###Celine Chang
 * Firebase... almost...
 * Documentation
 
-Apoorva Bhagwat
+###Apoorva Bhagwat
 * Twilio API bridging
 
-Justin Joco
+###Justin Joco
 * IMO API bridging
 
-Kunal Sinha
+###Kunal Sinha
 * Amazon Echo/Alexa platform.
 * Azure... almost...
 
-###Special Thanks:
+#Special Thanks:
 * IMO (Brian and "Qui-Gon Jinn")
 * Twilio (Greg)
