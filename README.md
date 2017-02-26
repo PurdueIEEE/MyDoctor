@@ -6,15 +6,23 @@ A new Alexa skill that helps make the process of visiting the doctor easier made
 ## USAGE
 Ex. 1)
   * Hey Alexa, tell MyDoctor I have chest pain.
+  Alexa: ...Anything else?
+  * I have a cold.
+  Alexa: ...Anything else?
+  * Done
 Ex. 2)
   * Hey Alexa, talk to MyDoctor.
+  Alexa: ...
+  * I have chest pain
+  Alexa: ...Anything else?
+  * I have a cold.
+  Alexa: ...Anything else?
+  * Done
   
    
   
 ## BUILD/INSTALLATION INSTRUCTIONS
-  * [PLATFORM 1]
-    * [BUILD EXAMPLE]
-  * [PLATFORM 2]
+  * Amazon Echo
     * [BUILD EXAMPLE]
 
 ## [INTERFACES] _(if applicable)_ 
