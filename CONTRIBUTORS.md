@@ -1,7 +1,7 @@
 #Contributors
 Aditya Vaidyam
 
-Haley Chan
+Hayley Chan - Worked on email sending and test cases for Alexa
 
 Celine Chang
 
