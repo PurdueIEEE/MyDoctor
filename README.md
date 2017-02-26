@@ -9,7 +9,7 @@ Ex. 1)
   Alexa: ...Anything else?
   * I have a cold.
   Alexa: ...Anything else?
-  * Done
+  * Done<br>
 Ex. 2)
   * Hey Alexa, talk to MyDoctor.
   Alexa: ...
