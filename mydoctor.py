@@ -72,6 +72,7 @@ EMAIL_PASSWORD = ''
 
 # We didn't feel the need to create a complex first-time setup and link it
 # to the Alexa User ID, so these variables are pre-set for now.
+HOSTNAME = ""
 USER_NAME = ""
 DOCTOR_NAME = ""
 DOCTOR_PHONE = ""
@@ -176,7 +177,7 @@ def call_phone(to_num, phrase):
         'From': TWILIO_PHONE,
         'To': to_num,
         'IfMachine': 'Continue',
-        'Url': "https://avaidyam.pythonanywhere.com/twilio/" + token,
+        'Url': HOSTNAME + "/twilio/" + token,
     }, auth = (TWILIO_SID, TWILIO_TOKEN))
 
 # Dequeues a .call document by the given token to return a phrase to say.
