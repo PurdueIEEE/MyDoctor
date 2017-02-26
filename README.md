@@ -23,9 +23,9 @@ Ex. 1)
   **Alexa:** Your symptom was `symptom name`. Anything else?
   * I have a `symptom`.<br>
   **Alexa:** Your symptom was `symptom name`. Anything else?
-  * Done
-  **Alexa:** Your symptoms seem to be `symptom list`. I've made an appointment for `appointment time` with your doctor.
-  **Twilio:** Hello `doctor name`. Your patient `user name` has made an appointment for `appointment time` with the following symptoms: `symptom list`. Thank you.
+  * Done.<br>
+  **Alexa:** Your symptoms seem to be `symptom list`. I've made an appointment for `appointment time` with your doctor.<br>
+  **Twilio:** Hello `doctor name`. Your patient `user name` has made an appointment for `appointment time` with the following symptoms: `symptom list`. Thank you.<br>
   **Email:** `{user spoken symptom => detailed possible IMO codes}`
 
 ## Contributor Guide
