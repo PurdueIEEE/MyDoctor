@@ -10,33 +10,6 @@ from flask import request
 from flask_ask import Ask, request, session, question, statement
 import twilio.twiml
 
-# Alexa intents & utterances configuration is below:
-'''
-{
-    "intents": [
-        {
-            "intent": "GetRawText",
-            "slots": [
-                {
-                    "name": "RawText",
-                    "type": "AMAZON.LITERAL"
-                }
-            ]
-        },
-        {
-            "intent": "AMAZON.HelpIntent"
-        },
-        {
-            "intent": "AMAZON.StopIntent"
-        },
-        {
-            "intent": "AMAZON.CancelIntent"
-        }
-    ]
-}
-GetRawText {I am not feeling well and am feeling pain in my shoulder| RawText}
-'''
-
 # App Setup:
 app = Flask(__name__)
 ask = Ask(app, '/')
@@ -129,13 +102,7 @@ def symptomAPI():
 
 # Send an email to an address with a given message.
 def send_email(to, subject, msg):
-    toaddrs = 'embshackillinois@gmail.com'
-    msg = '''
-    From: MyDoctor <embshackillinois@gmail.com>
-    Subject: %s
-    %s
-    ''' % (subject, msg)
-
+    msg = 'From: MyDoctor <embshackillinois@gmail.com>\nSubject: %s\n\n%s' % (subject, msg)
     s = smtplib.SMTP(EMAIL_SERVER)
     s.ehlo()
     s.starttls()
@@ -204,7 +171,7 @@ def voice_input(raw):
     # Success: call, email, and return voice.
     resusr = 'Your symptoms seem be ' + summed + ". I've made an appointment for tomorrow at 3pm with your doctor."
     resdoc = 'Hello ' + DOCTOR_NAME + '. Your patient ' + USER_NAME + ' has made an appointment with the following symptoms: ' + summed + '. Thank you.'
-    resdet = '<pre>' + json.dumps(session.attributes, indent=4, separators=(',', ': ')) + '</pre>'
+    resdet = json.dumps(session.attributes, indent=4, separators=(',', ': '))
 
     call_phone(DOCTOR_PHONE, resdoc)
     send_email(DOCTOR_EMAIL, 'Patient Appointment', resdet)
@@ -229,4 +196,4 @@ def voice_stop():
     return statement('Goodbye!')
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='0.0.0.0', debug=True)
