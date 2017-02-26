@@ -18,6 +18,7 @@ logging.getLogger('flask_ask').setLevel(logging.DEBUG)
 # Authorization Codes:
 IMO_API_KEY = '' #base64'ed
 APIAI_API_KEY = ''
+TWILIO_PHONE = ''
 TWILIO_SID = ''
 TWILIO_TOKEN = ''
 EMAIL_SERVER = ''
@@ -113,7 +114,7 @@ def symptomAPI():
 
 # Send an email to an address with a given message.
 def send_email(to, subject, msg):
-    msg = 'From: MyDoctor <embshackillinois@gmail.com>\nSubject: %s\n\n%s' % (subject, msg)
+    msg = 'From: MyDoctor <' + EMAIL_USERNAME + '>\nSubject: %s\n\n%s' % (subject, msg)
     s = smtplib.SMTP(EMAIL_SERVER)
     s.ehlo()
     s.starttls()
@@ -131,7 +132,7 @@ def call_phone(to_num, phrase):
 
     # Actually call the Twilio API here.
     r = requests.post('https://api.twilio.com/2010-04-01/Accounts/' + TWILIO_SID + '/Calls.json', data = {
-        'From': '7652312067',
+        'From': TWILIO_PHONE,
         'To': to_num,
         'IfMachine': 'Continue',
         'Url': "https://avaidyam.pythonanywhere.com/twilio/" + token,
