@@ -122,6 +122,13 @@ def send_email(to, subject, msg):
     s.sendmail(EMAIL_USERNAME, to, msg)
     s.quit()
 
+# Here's a stub to create an appointment with an FHIR backend.
+# We couldn't access a working FHIR backend so this is just static for now.
+# In the future, lookup the user's calendar, and the FHIR appointment system,
+# and find a matching time to make an appointment. Then format it and return it.
+def fhir_stub(icds):
+    return 'tomorrow at 3pm'
+
 # Enqueues a .call document with the phrase to be said and calls the number
 # given. The Twilio server will route to the respond_phone endpoint and say
 # phrase in a TwiML document returned to it.
@@ -224,8 +231,9 @@ def voice_input(raw):
     summed = (', '.join(descs))
 
     # Success: call, email, and return voice.
-    resusr = 'Your symptoms seem be ' + summed + ". I've made an appointment for tomorrow at 3pm with your doctor."
-    resdoc = 'Hello ' + DOCTOR_NAME + '. Your patient ' + USER_NAME + ' has made an appointment with the following symptoms: ' + summed + '. Thank you.'
+    appt_time = fhir_stub(session.attributes)
+    resusr = 'Your symptoms seem be ' + summed + ". I've made an appointment for " + appt_time + " with your doctor."
+    resdoc = 'Hello ' + DOCTOR_NAME + '. Your patient ' + USER_NAME + ' has made an appointment ' + appt_time + ' with the following symptoms: ' + summed + '. Thank you.'
     resdet = json.dumps(session.attributes, indent=4, separators=(',', ': '))
 
     call_phone(DOCTOR_PHONE, resdoc)
