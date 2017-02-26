@@ -1,8 +1,0 @@
-GetSingleSymptom I feel {pain|feel} in my {leg|location}
-GetSingleSymptom My {leg|location} {hurts|feel}
-GetSingleSymptom I {broke|feel} my {arm|location}
-GetSingleSymptom My {nose|location} is {runny|feel}
-GetDualSymptom I feel {pain|feelA} in my {leg|locationA} and My {leg|locationB} {hurts|feelB}
-GetDualSymptom I {broke|feelA} my {arm|locationA} and My {leg|locationB} {hurts|feelB}
-GetDualSymptom My {nose|locationA} is {runny|feelA} and I {broke|feelB} my {arm|locationB}
-GetDualSymptom I feel {pain|feelA} in my {leg|locationA} and My {leg|locationB} {hurts|feelB}
