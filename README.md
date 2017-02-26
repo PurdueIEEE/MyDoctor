@@ -12,11 +12,11 @@ Ex. 1)
   * Done
   
 Ex. 2)
-  * Hey Alexa, talk to MyDoctor.
+  * Hey Alexa, talk to MyDoctor.<br>
   Alexa: ...
-  * I have chest pain
+  * I have chest pain<br>
   Alexa: ...Anything else?
-  * I have a cold.
+  * I have a cold.<br>
   Alexa: ...Anything else?
   * Done
   
